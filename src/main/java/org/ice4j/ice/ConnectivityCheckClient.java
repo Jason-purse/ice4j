@@ -33,7 +33,7 @@ import org.jitsi.utils.logging2.Logger;
 /**
  * The class that will be generating our outgoing connectivity checks and that
  * will be handling their responses or lack thereof.
- *
+ * 这个类将生成我们的外出连接检查 并且将会处理它们的响应或者 缺失原因 ..
  * @author Emil Ivov
  * @author Lyubomir Marinov
  */
@@ -47,11 +47,13 @@ class ConnectivityCheckClient
 
     /**
      * A scheduled executor service to perform periodic tasks of the client
+     * 这个客户端用来执行周期性任务的调度执行器服务 ...
      */
     private final ScheduledExecutorService scheduledExecutorService;
 
     /**
      * An executor service to perform background tasks of the client
+     * 用来执行这个客户端的背后的任务 ...
      */
     private final ExecutorService executorService;
 

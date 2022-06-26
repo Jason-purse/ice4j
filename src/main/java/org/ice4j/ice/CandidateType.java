@@ -66,6 +66,8 @@ public enum CandidateType
      * Private Networks (VPNs) and Realm Specific IP (RSIP) [RFC3102]
      * (which lives at the operating system level). This is the old name for
      * "host".
+     *
+     * 从本地网卡获取...
      */
     LOCAL_CANDIDATE("local"),
 

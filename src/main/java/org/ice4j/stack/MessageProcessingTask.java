@@ -32,6 +32,10 @@ import org.ice4j.message.*;
  * <tt>RawMessage</tt> can be updated and instance can be reused and
  * scheduled with new <tt>RawMessage</tt>
  *
+ * 这个类被用来解析 / 派发进入的消息(通过ExecutorServie 进行并发执行) ..
+ * 为了减少内存分配 它被设计为池化 ,这个类型的实例是可变的(例如一个RawMessage 能够被更新并且实例能够被重用 通过新的RawMessage 进行重新调度)..
+ *
+ *
  * @author Emil Ivov
  * @author Yura Yaroshevich
  */
@@ -47,6 +51,8 @@ class MessageProcessingTask
     /**
      * Indicates that <tt>MessageProcessingTask</tt> is cancelled and should not
      * process <tt>RawMessage</tt> anymore.
+     *
+     * 指定这个消息处理任务结束并不能够处理RawMessage  ..
      */
     private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
@@ -84,6 +90,8 @@ class MessageProcessingTask
      * the new instance, is going to be its owner, specifies the
      * <tt>MessageEventHandler</tt> and represents the <tt>ErrorHandler</tt> to
      * handle exceptions in the new instance
+     *        这个网络访问器 被用来创建这个新的消息处理器 ... 作为网络访问管理器的拥有者 ... 指定MessageEventHandler 并作为ErrorHandler 在这个实例中去处理异常 ...
+     *
      * @throws IllegalArgumentException if any of the mentioned properties of
      * <tt>netAccessManager</tt> are <tt>null</tt>
      */
@@ -110,6 +118,8 @@ class MessageProcessingTask
     }
 
     /**
+     * 分配原始消息 并通过executor 线程进行执行 ...  执行完成的回调 ...配置.
+     *
      * Assigns the <tt>RawMessage</tt> that will be processed
      * by this <tt>MessageProcessingTask</tt> on executor's thread.
      * @param message RawMessage to be processed
@@ -148,6 +158,8 @@ class MessageProcessingTask
 
     /**
      * Does the message parsing.
+     *
+     * 查看消息处理 ...
      */
     @Override
     public void run()
@@ -165,11 +177,13 @@ class MessageProcessingTask
             rawMessage = null;
             rawMessageProcessedHandler = null;
 
+            // 状态判断 ...
             if (cancelled.get())
             {
                 return;
             }
 
+            // 网络访问器 获取StunStack ... 进行真正的处理 ...
             StunStack stunStack = netAccessManager.getStunStack();
 
             Message stunMessage;

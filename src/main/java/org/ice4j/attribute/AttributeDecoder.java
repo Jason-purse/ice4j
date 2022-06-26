@@ -23,6 +23,8 @@ import org.ice4j.*;
  * The class provides utilities for decoding a binary stream into an Attribute
  * class.
  *
+ * 这个类提供了解析一个二进制流到属性类的工具 ...
+ *
  * @author Emil Ivov
  * @author Sebastien Vincent
  * @author Aakash Garg
@@ -32,6 +34,8 @@ public class AttributeDecoder
     /**
      * Decodes the specified binary array and returns the corresponding
      * attribute object.
+     *
+     * 尝试解析一个特定的二进制数组,然后返回响应的属性对象 ...
      *
      * @param bytes the binary array that should be decoded.
      * @param offset the index where the message starts.
@@ -56,6 +60,7 @@ public class AttributeDecoder
         //Discover attribute type
         char attributeType = (char)
             (((bytes[offset] & 0xFF) << 8) | (bytes[offset + 1] & 0xFF));
+        // 这里是算出的属性长度 ...开始处理 ..
         char attributeLength = (char)
             (((bytes[offset + 2] & 0xFF) << 8) | (bytes[offset + 3] & 0xFF));
 

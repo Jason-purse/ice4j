@@ -27,6 +27,10 @@ import org.ice4j.socket.*;
 import org.jitsi.utils.logging2.*;
 
 /**
+ *
+ * 一个组件是 具备单个传输地址的 媒体流的片段 ...
+ * 一个媒体流也许需要多个组件 ,它们每一个将作为媒体流的整体进行工作 ...
+ * 对于基于RTP的媒体流,每一个媒体流有两个组件(一个是 RTP,另一个是 RTCP) ...
  * A component is a piece of a media stream requiring a single transport
  * address; a media stream may require multiple components, each of which has
  * to work for the media stream as a whole to work. For media streams based on

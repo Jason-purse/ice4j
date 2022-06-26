@@ -21,12 +21,15 @@ package org.ice4j.ice;
  * Enumeration which lists the different available methods used to discover new
  * candidates.
  *
+ * 这个枚举列出了能够被用来发现新的候选的方法枚举
+ *
  * @author Vincent Lucas
  */
 public enum CandidateExtendedType
 {
     /**
      * There candidate is discovered directly by the host.
+     * 直接通过主机发现候选者 ...
      */
     HOST_CANDIDATE("host"),
 

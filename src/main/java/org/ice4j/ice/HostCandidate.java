@@ -34,6 +34,11 @@ import org.ice4j.socket.*;
  * example should be brought down the inheritance chain.
  * </p>
  *
+ *
+ * HostCandidate 能够通过绑定这个主机的IP 地址上的特定端口(根据正在运行这个程序的主机) 获取 .....
+ * 可以包含物理网卡 / 逻辑网卡上的IP 地址,例如包含 VPN(虚拟私有网络 Virtual Private Networks), 移动IPV6 / 特定身份IP(Realm Specific IP) ..
+ * 此时这个类仅仅支持 UDP 候选 ... 对于其他传输协议的支持实现 应该将此类作为一个抽象 以及某些特定的传输组件例如 socket(举个例子因为打破这个继承链) ...
+ *
  * @author Emil Ivov
  */
 public class HostCandidate extends LocalCandidate
@@ -42,6 +47,7 @@ public class HostCandidate extends LocalCandidate
     /**
      * If this is a local candidate the field contains the socket that is
      * actually associated with the candidate.
+     * 如果这是一个本地候选者(这个字段包含了一个与此候选者联系的socket) ...
      */
     private final IceSocketWrapper socket;
 
@@ -63,7 +69,7 @@ public class HostCandidate extends LocalCandidate
 
     /**
      * Creates a HostCandidate for the specified transport address.
-     *
+     * 组件可以有一个候选对(存在之后,则无法被其他的组件使用) ..
      * @param transportAddress the transport address for the new
      * <tt>HostCandidate</tt>.
      * @param parentComponent the <tt>Component</tt> that this candidate

@@ -26,6 +26,8 @@ import org.ice4j.stack.*;
  * Represents an <tt>EventObject</tt> which notifies of an event associated with
  * a specific STUN <tt>Message</tt>.
  *
+ * 作为一个事件对象 - 它将会通知指定STUN 消息关联的对象 ...
+ *
  * @author Lyubomir Marinov
  */
 public class BaseStunMessageEvent
@@ -43,6 +45,7 @@ public class BaseStunMessageEvent
 
     /**
      * The <tt>StunStack</tt> associated with this instance.
+     * 言外之意它会通知它  ..
      */
     private final StunStack stunStack;
 
@@ -54,11 +57,12 @@ public class BaseStunMessageEvent
     /**
      * Initializes a new <tt>BaseStunMessageEvent</tt> associated with a
      * specific STUN <tt>Message</tt>.
+     * 初始化一个和指定STUN 消息关联的基本STUN 消息事件对象 ...
      *
      * @param stunStack the <tt>StunStack</tt> to be associated with the new
      * instance
      * @param sourceAddress the <tt>TransportAddress</tt> which is to be
-     * reported as the source of the new event
+     * reported as the source of the new event (这个地址 将作为新事件的来源进行报告) ...
      * @param message the STUN <tt>Message</tt> associated with the new event
      */
     public BaseStunMessageEvent(

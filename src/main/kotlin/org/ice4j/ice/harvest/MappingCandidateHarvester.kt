@@ -26,15 +26,20 @@ import org.ice4j.ice.ServerReflexiveCandidate
 
 /**
  * A [CandidateHarvester] which maps existing local [HostCandidate]s to new candidates.
+ *
+ * CandidateHarvester 主要将存在的 本地 HostCandidate 的映射到 新的候选者 ...
  */
 abstract class MappingCandidateHarvester @JvmOverloads constructor(
     val name: String,
     /**
+     * 是否这个harvester 应该匹配共有地址的端口 ..
      * Whether this harvester should match the port of the public address.
      *
+     * 如果匹配,那么仅仅当 本地主机候选者的地址以及匹配公共(掩盖)地址 且端口匹配,那么 公有地址的端口才会被使用 - 将会被增加为映射候选者..
      * When [matchPort] is enabled, mapping candidates will be added only when the local host candidate's address and
      * port match the public (mask) address, and the public (mask) address's port will be used.
      *
+     * 当禁用时,将会增加mapping 候选者 .. 无论 本地主机候选者的网络地址是否匹配公共的(掩码)的地址 ,主机候选端口将会被保留 ....
      * When [matchPort] is disabled, mapping candidates will be added whenever the local host candidate's inet address
      * matches the public (mask) address, and the host candidate port will be preserved.
      */

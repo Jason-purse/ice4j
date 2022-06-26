@@ -18,6 +18,7 @@
 package org.ice4j;
 
 /**
+ * 这个接口 在发送一个请求的时候用作一个回调 ... 这个响应收集器 被用来 打算派发响应 ...
  * The interface is used as a callback when sending a request. The response
  * collector is then used as a means of dispatching the response.
  *
@@ -36,6 +37,8 @@ public interface ResponseCollector
      * Notifies this collector that no response had been received after repeated
      * retransmissions of the original request (as described by rfc3489) and
      * that the request should be considered unanswered.
+     *
+     * 通知这个收集器这里没有响应得到回应(原始请求重复多次) - rfc 3489描述 那么这个请求将会考虑为未应答 ...
      *
      * @param event the <tt>StunTimeoutEvent</tt> containing a reference to the
      * transaction that has just failed.

@@ -35,6 +35,10 @@ import static org.ice4j.ice.harvest.HarvestConfig.config;
  * to be already present and bound in a <tt>Component</tt> before being able to
  * harvest the type of addresses that they are responsible for.
  *
+ *
+ * 一个HostCandidateHarvester 将会收集一个组件的 host Candidate ...
+ * 大多数的CandidateHarvester 可能需要依赖 host harvester的输出 ...
+ * 那就是所有的host 地址 - 在它们能够收集这种地址的类型之前  将会负责保管并约束到一个组件中 ...
  * @author Emil Ivov
  * @author George Politis
  * @author Boris Grozev
@@ -88,6 +92,7 @@ public class HostCandidateHarvester
 
     /**
      * Gets the array of allowed interfaces.
+     * 在收集host candidate的时候懒初始化 ..
      *
      * @return the non-empty String array of allowed interfaces or null.
      */
@@ -227,6 +232,8 @@ public class HostCandidateHarvester
     /**
      * @return the list of all local IP addresses from all allowed network
      * interfaces, which are allowed addresses.
+     *
+     * 获取当前运行此程序的主机上的所有允许的网络接口的本地IP 地址 ...
      */
     public static List<InetAddress> getAllAllowedAddresses()
     {
@@ -236,6 +243,8 @@ public class HostCandidateHarvester
             for (NetworkInterface iface
                     : Collections.list(NetworkInterface.getNetworkInterfaces()))
             {
+
+                // 取消无用的网卡检测 ..
                 if (NetworkUtils.isInterfaceLoopback(iface)
                         || !NetworkUtils.isInterfaceUp(iface)
                         || !isInterfaceAllowed(iface))
@@ -249,11 +258,15 @@ public class HostCandidateHarvester
                 {
                     InetAddress address = ifaceAddresses.nextElement();
 
+                    // 进行地址检测 ... 不允许的地址,排除掉 ...
                     if (!isAddressAllowed(address))
                         continue;
 
+                    // 如果配置不允许使用Ipv6 ,但是地址是Ipv6 丢掉 ...
                     if (!config.useIpv6() && address instanceof Inet6Address)
                         continue;
+                    // 不使用链路本地地址(相同链路之间的通信,不依靠互联网传播,感觉这个意义不是很大) ...
+                    // 但是如果是 相同NAT 下面的相同链路的不同设备通信,那么也是有意义的 ...
                     if (!config.useLinkLocalAddresses() && address.isLinkLocalAddress())
                         continue;
 
@@ -432,7 +445,7 @@ public class HostCandidateHarvester
     /**
      * Returns a boolean value indicating whether ice4j should allocate a host
      * candidate for the specified interface.
-     *
+     * 是否应该收集指定网卡的 host candidate ...
      * @param iface The {@link NetworkInterface}.
      *
      * @return <tt>true</tt> if the {@link NetworkInterface} is listed in the
@@ -477,6 +490,7 @@ public class HostCandidateHarvester
             }
         }
 
+        // 默认都是可以的 ...(不限制) ...
         return true;
     }
 
@@ -484,6 +498,10 @@ public class HostCandidateHarvester
      * Returns <tt>true</tt> if <tt>address</tt> is allowed to be used by this
      * <tt>HostCandidateHarvester</tt> for the purposes of candidate allocation,
      * and <tt>false</tt> otherwise.
+     *
+     * 一个地址是允许的, 非回环地址
+     * 2. 显式配置允许的  / 或者非显式配置允许的地址 ..(且允许) ..
+     * 3. 一个地址没有显式配置为搬掉的 ..
      *
      * An address is considered allowed, if
      * 1. It is not a loopback address.
@@ -786,6 +804,8 @@ public class HostCandidateHarvester
      * Initializes the host candidate interface filters stored in the
      * <tt>org.ice4j.ice.harvest.ALLOWED_INTERFACES</tt> and
      * <tt>org.ice4j.ice.harvest.BLOCKED_INTERFACES</tt> properties.
+     *
+     * 根据这两个系统属性进行 查看 ..
      *
      * @throws java.lang.IllegalStateException if there were errors during host
      * candidate interface filters initialization.

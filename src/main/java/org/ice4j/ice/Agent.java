@@ -39,6 +39,10 @@ import java.util.logging.*;
 import static org.ice4j.ice.AgentConfig.config;
 
 /**
+ *
+ * 对此我们可以参考 https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/iceConnectionState 相关的文章对照学习 ...
+ *
+ *
  * An <tt>Agent</tt> could be described as the main class (i.e. the chef
  * d'orchestre) of an ICE implementation.
  * <p>
@@ -53,6 +57,14 @@ import static org.ice4j.ice.AgentConfig.config;
  * garbage collector to call {@link #finalize()} on it.
  * </p>
  *
+ *
+ * 一个代理可以在ICE 实现的主类中被描述 ...(例如 ...
+ * 正如 RFC 3264所定义, 一个代理是一个协议实现(涉及到offer / answer 交换)
+ * 这里包含了两个代理参与到一个offer / answer 的交换 ..
+ * 注意:
+ *      一个Agent 实例 应该显式的通过free 进行垃圾回收(预备) - 它将即时的释放与他关联的重要的资源 ...
+ *      否则,它将等待垃圾回收器调用 finalize ..
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  * @author Sebastien Vincent
@@ -66,6 +78,8 @@ public class Agent
      * <tt>PropertyChangeListener</tt> and represents the fact that there are no
      * <tt>IceProcessingState</tt> change listeners added to an <tt>Agent</tt>
      * (using {@link #addStateChangeListener(PropertyChangeListener)}.
+     *
+     * 这是一个常量,代表了 没有IceProcessingState 改变监听器增加到代理上 ...
      */
     private static final PropertyChangeListener[] NO_STATE_CHANGE_LISTENERS
         = new PropertyChangeListener[0];
@@ -82,6 +96,7 @@ public class Agent
     /**
      * The name of the {@link PropertyChangeEvent} that we use to deliver
      * events on changes in the state of ICE processing in this agent.
+     * 我们用来派发在这个代理上的ICE 处理状态的改变事件 ...
      */
     public static final String PROPERTY_ICE_PROCESSING_STATE
                                             = "IceProcessingState";
@@ -193,6 +208,8 @@ public class Agent
 
     /**
      * The user fragment that we should use for the ice-ufrag attribute.
+     *
+     * 在ice-ufrag属性中使用 用户帧 ...
      */
     private final String ufrag;
 
@@ -205,6 +222,9 @@ public class Agent
      * The tie-breaker number is used in connectivity checks to detect and
      * repair the case where both agents believe to have the controlling or the
      * controlled role.
+     * 连接断开器编号用于连接检查，以检测和
+     * 修复两个代理都认为具有控制或
+     * 受控角色的情况。
      */
     private long tieBreaker;
 
@@ -215,6 +235,7 @@ public class Agent
 
     /**
      * The entity that will be taking care of outgoing connectivity checks.
+     * 这个实体关注外出的连接检查 ...
      */
     private final ConnectivityCheckClient connCheckClient;
 
@@ -322,20 +343,26 @@ public class Agent
     /**
      * Creates an empty <tt>Agent</tt> with no streams, and no address.
      * @param ufragPrefix an optional prefix to the generated local ICE username
-     * fragment.
+     * fragment. 一个可选的前缀(用来为本地已生成的ICE 用户名帧添加前缀) ...
+     *
+     *
      */
     public Agent(String ufragPrefix, Logger parentLogger)
     {
+        // 获取一个 严格的强随机数生成器
         SecureRandom random = new SecureRandom();
 
         String ufrag = ufragPrefix == null ? "" : ufragPrefix;
+        // 32进制
         ufrag += new BigInteger(24, random).toString(32);
+        // 加上当前时间戳就不会重复 ...
         ufrag += BigInteger.valueOf(System.currentTimeMillis()).toString(32);
+
         ufrag = ensureIceAttributeLength(ufrag, /* min */ 4, /* max */ 256);
         this.ufrag = ufrag;
         if (parentLogger != null)
         {
-
+            // 创建基于路径形式的 日志器
             logger = parentLogger.createChildLogger(
                     this.getClass().getName(),
                     Collections.singletonMap("ufrag", this.ufrag));
@@ -345,7 +372,9 @@ public class Agent
             logger = new LoggerImpl(Agent.class.getName(), new LogContext("ufrag", this.ufrag));
         }
 
+        // 连接检查 ...
         connCheckServer = new ConnectivityCheckServer(this);
+
         connCheckClient = new ConnectivityCheckClient(
             this, agentTasksScheduler, agentTasksExecutor);
 
@@ -357,6 +386,7 @@ public class Agent
                     new BigInteger(128, random).toString(32),
                     /* min */ 22, /* max */ 256);
 
+        // long 是 8个字节 ....
         tieBreaker = random.nextLong() & 0x7FFFFFFFFFFFFFFFL;
         nominator = new DefaultNominator(this);
 
@@ -2211,6 +2241,8 @@ public class Agent
     /**
      * Terminates this <tt>Agent</tt> by stopping the handling of connectivity
      * checks and setting a specific termination state on it.
+     *
+     * 中断当前Agent / 通过停止连接检查处理 并设置 特定的中断状态给它 ..
      *
      * @param terminationState the state that we'd like processing to terminate
      * with i.e. either {@link IceProcessingState#TERMINATED} or

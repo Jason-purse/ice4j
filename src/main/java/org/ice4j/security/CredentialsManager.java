@@ -32,6 +32,11 @@ import java.util.*;
  * to add other parameters in here that would allow us to better select an
  * authority.
  *
+ *  这个凭证管理器允许应用去执行 进入MessageIntegrityAttribute的验证(通过注册一个  CredentialsAuthority 实现)
+ *  这个机制的重点是允许同时使用在应用中(它能够处理大量可能的应用(例如STUN / TURN 服务器) 或者其他仅仅工作在很少人的应用中 ...
+ *  例如一个ICE 实现 ...
+ *
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  */
@@ -40,6 +45,8 @@ public class CredentialsManager
     /**
      * The list of <tt>CredentialsAuthority</tt>s registered with this manager
      * as being able to provide credentials.
+     *
+     * 为这个管理器注册的CredentialsAuthority 列表被用来提供凭证 ...
      */
     private final List<CredentialsAuthority> authorities = new LinkedList<>();
 

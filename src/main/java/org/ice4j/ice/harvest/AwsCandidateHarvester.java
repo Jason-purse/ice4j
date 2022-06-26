@@ -27,6 +27,8 @@ import java.util.logging.*;
  * Uses the Amazon AWS APIs to retrieve the public and private IPv4 addresses
  * for an EC2 instance.
  *
+ * 使用Amazon AWS API 抓取共有 / 私有IPV4地址(针对EC2实例) ...
+ *
  * @author Emil Ivov
  */
 public class AwsCandidateHarvester

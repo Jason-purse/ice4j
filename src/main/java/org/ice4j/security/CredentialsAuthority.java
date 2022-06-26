@@ -22,6 +22,8 @@ package org.ice4j.security;
  * in order to allow the stack to verify the integrity of incoming messages
  * containing the <tt>MessageIntegrityAttribute</tt>.
  *
+ * 这个接口可以被应用实现,为了允许栈去验证进入消息包含MessageIntegrityAttribute的完整性 ...
+ *
  * @author Emil Ivov
  */
 public interface CredentialsAuthority
@@ -47,6 +49,9 @@ public interface CredentialsAuthority
      * username or user frag,  an empty array if there was no password for that
      * username or <tt>null</tt> if the username is not a remote user name
      * recognized by this <tt>CredentialsAuthority</tt>.
+     *
+     * 根据远程username / user frag 可以返回相关的key(密码） ..
+     * 一个空的数组会返回(如果没有密码)或者如果这个用户不是一个远程用户(不能被这个CredentialsAuthority识别)将返回null
      *
      * @param username the remote user name or user frag whose credentials we'd
      * like to obtain.

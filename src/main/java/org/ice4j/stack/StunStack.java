@@ -36,6 +36,11 @@ import java.util.logging.*;
  * The entry point to the Stun4J stack. The class is used to start, stop and
  * configure the stack.
  *
+ * Stun4J 栈的入口 ..??
+ * 这个类被用来启动 / 停止并且配置这个栈 ..
+ *
+ * 栈协议(应该是比较复杂的) ..
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  * @author Aakash Garg.
@@ -54,6 +59,9 @@ public class StunStack
      * The indicator which determines whether
      * <code>Mac.getInstance(MessageIntegrityAttribute.HMAC_SHA1_ALGORITHM)</code>
      * has been called.
+     *
+     * 由于MAC 在java 平台支持的与其他密码学hash算法结合的hmac算法有限 ...  需要查看发行实现 了解支持那些算法 ...
+     * 这个指示器被用来指定 Mac.getInstance(MessageIntegrityAttribute.HMAC_SHA1_ALGORITHM) 被调用 ...
      *
      * @see #StunStack()
      */
@@ -115,6 +123,8 @@ public class StunStack
     /**
      * Creates and starts a Network Access Point (Connector) based on the
      * specified socket.
+     *
+     * 创建并开始一个网络访问点(连接器)  - 基于特定的socket ....
      *
      * @param sock The socket that the new access point should represent.
      */
@@ -367,9 +377,12 @@ public class StunStack
      * @param peerUdpMessageEventHandler the <tt>PeerUdpMessageEventHandler</tt>
      *            that will handle incoming UDP messages which are not STUN
      *            messages and ChannelData messages.
+     *
+     *                                   这个peerUdpMes....Handler 将处理进入的UDP 消息(这些并不是STUN 消息和ChannelData 消息) ...
      * @param channelDataEventHandler the <tt>ChannelDataEventHandler</tt> that
      *            will handle incoming UDP messages which are ChannelData
      *            messages.
+     *                                ChannelData...Handler 用来处理ChannelData 消息..
      */
     public StunStack(PeerUdpMessageEventHandler peerUdpMessageEventHandler,
             ChannelDataEventHandler channelDataEventHandler)
@@ -379,6 +392,8 @@ public class StunStack
          * several hundred milliseconds so we don't want it instantiated only
          * after we get a response because the delay may cause the transaction
          * to fail.
+         *
+         * MessageIntegrityAttribute中使用的Mac 实例化需要花费击败毫秒 ,仅仅在我们得到响应之后所以不想等待它实例化,因为这几百秒可能会导致事务失败 ...
          */
         synchronized (StunStack.class)
         {
@@ -396,6 +411,8 @@ public class StunStack
                 }
             }
         }
+
+        // 创建网络访问管理器 ...
         netAccessManager =
             new NetAccessManager(this, peerUdpMessageEventHandler,
                 channelDataEventHandler);

@@ -26,6 +26,8 @@ import org.ice4j.ice.*;
  * (e.g. host, reflexive, or relayed) for a specified {@link
  * org.ice4j.ice.Component}.
  *
+ * 为指定的 ice Component 收集 某些种类的 候选(host / reflexive / relayed) 的 候选Harvester ...
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  * @author Boris Grozev
@@ -39,6 +41,10 @@ public interface CandidateHarvester
      * <tt>Component</tt> using
      * {@link Component#addLocalCandidate(LocalCandidate)} as soon as they are
      * discovered.
+     * 收集这个CandidateHarvester 所支持类型的所有候选地址 ...
+     * 收集的候选地址能够增加到指定的组件(通过Component#addLocalCandidate(LocalCandidate)) 一旦它们被发现 ...
+     *
+     *
      *
      * @param component the {@link Component} that we'd like to gather candidate
      * addresses for.

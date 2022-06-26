@@ -28,6 +28,11 @@ import org.ice4j.stack.*;
  * the stack would use the one from this interface.
  * </p>
  *
+ * 这个类表示它有一个依赖于消息内容的值  ...
+ * MessageIntegrityAttribute 和 FingerprintAttribute 就是这样的消息 ...
+ *
+ * 它们并不通过标准的Attribute#encode 方法 ..
+ *
  * @author Emil Ivov
  */
 public interface ContentDependentAttribute

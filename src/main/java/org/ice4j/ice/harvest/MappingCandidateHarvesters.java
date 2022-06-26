@@ -30,7 +30,10 @@ import static org.ice4j.ice.harvest.HarvestConfig.config;
  * Manages a static list of {@link MappingCandidateHarvester} instances, created
  * according to configuration provided as system properties.
  *
+ * 管理一个静态列表实例(MappingCandidateHarvester) 根据提供的作为系统属性的配置创建  ..
+ *
  * The instances in the set are safe to use by any {@code Agent}s.
+ * 这个实例在任何Agent中使用都是安全的 ..
  *
  * @author Damian Minkov
  * @author Boris Grozev
@@ -88,6 +91,11 @@ public class MappingCandidateHarvesters
     }
 
     /**
+     *
+     * 初始化收割机 ...
+     * 首先他会读取配置 并实例化 harvester ...
+     * 等待它们初始化(这也许包含了网络交流 并且会花费很长一段时间) ..
+     * 然后它移除可能失败初始化的harvesters ... 并且移除可能使用重复地址的harvesters ...
      * Initializes {@link #harvesters}.
      * First it reads the configuration and instantiates harvesters accordingly,
      * waiting for their initialization (which may include network communication
@@ -96,6 +104,8 @@ public class MappingCandidateHarvesters
      *
      * Three types of mapping harvesters are supported: NAT (with
      * pre-configured addresses), AWS and STUN.
+     *
+     * 支持三种 映射(绘制)收割机 (NAT(预先配置地址,AWS以及 STUN) ...
      */
     public static synchronized void initialize()
     {
@@ -106,24 +116,29 @@ public class MappingCandidateHarvesters
         long start = System.currentTimeMillis();
         List<MappingCandidateHarvester> harvesterList = new LinkedList<>();
 
+        // 查询静态映射 ... 增加候选 ...
         for (HarvestConfig.StaticMapping staticMapping : config.getStaticMappings())
         {
             logger.info("Adding a static mapping: " + staticMapping);
+            // 默认没有端口,使用 9 ,一般来说,我们需要设置内外映射 ... 以及端口 ...
             // If the configuration has no port, then the port value is not used in any way. We put 9 (for "discard")
             // as a filler.
             int localPort = staticMapping.getLocalPort() != null ? staticMapping.getLocalPort() : 9;
             int publicPort = staticMapping.getPublicPort() != null ? staticMapping.getPublicPort() : 9;
+            // 设置本地地址 ...
             TransportAddress localAddress
                     = new TransportAddress(staticMapping.getLocalAddress(), localPort, Transport.UDP);
+            // 设置公开地址 ...
             TransportAddress publicAddress
                     = new TransportAddress(staticMapping.getPublicAddress(), publicPort, Transport.UDP);
-
+            // 增加一个静态映射候选Harvester ...
             harvesterList.add(new StaticMappingCandidateHarvester(
                     publicAddress,
                     localAddress,
                     staticMapping.getName(),
                     staticMapping.getLocalPort() != null));
         }
+
 
         // AWS harvester
         boolean enableAwsHarvester = config.enableAwsHarvester();
@@ -133,11 +148,14 @@ public class MappingCandidateHarvesters
             harvesterList.add(new AwsCandidateHarvester());
         }
 
+
         // STUN harvesters
+        // stun 服务器 ...
         List<String> stunServers = config.stunMappingCandidateHarvesterAddresses();
         if (!stunServers.isEmpty())
         {
             // Create STUN harvesters (and wait for all of their discovery to finish).
+            // 创建STUN 收割机(等待它们所有的发现完成,它们将发现所有的候选者 ...) ...
             List<StunMappingCandidateHarvester> stunHarvesters = createStunHarvesters(stunServers);
 
             // We have STUN servers configured, so flag failure if none of them were able to discover an address.
@@ -161,6 +179,8 @@ public class MappingCandidateHarvesters
     /**
      * Prunes a list of mapping harvesters, removing the ones without valid
      * addresses and those with duplicate addresses.
+     *
+     * 映射收割机的纯列表,移除无效的地址 或者已经重复的地址 ...
      * @param harvesters the list of harvesters.
      * @return the pruned list.
      */
@@ -210,6 +230,8 @@ public class MappingCandidateHarvesters
     /**
      * Creates STUN mapping harvesters for each of the given STUN servers, and
      * waits for address discovery to finish for all of them.
+     *
+     * 创建一个STUN mapping harvesters(为每一个给定的STUN 服务器) 并等待它们完成所有的地址发现 ...
      * @param stunServers an array of STUN server addresses (ip_address:port
      * pairs).
      * @return  the list of those who were successful in discovering an address.
@@ -243,6 +265,7 @@ public class MappingCandidateHarvesters
                 logger.severe("Invalid STUN server port: " + addressAndPort[1]);
                 continue;
             }
+
 
             TransportAddress remoteAddress
                 = new TransportAddress(
@@ -280,6 +303,7 @@ public class MappingCandidateHarvesters
 
         // Now run discover() on all created harvesters in parallel and pick
         // the ones which succeeded.
+        // 并发运行, 然后等待所有的discover 完成 ...
         ExecutorService es = ExecutorFactory.createFixedThreadPool(tasks.size(), "ice4j.Harvester-executor-");
 
         try
@@ -302,8 +326,10 @@ public class MappingCandidateHarvesters
                     StunMappingCandidateHarvester harvester = future.get();
 
                     // The STUN server replied successfully.
+                    // 这个收割机 获取到了面具 ..
                     if (harvester.getMask() != null)
                     {
+                        // 表示这是有效的 收割机 ...
                         stunHarvesters.add(harvester);
                     }
                 }
@@ -313,6 +339,7 @@ public class MappingCandidateHarvesters
                 }
                 catch (InterruptedException ie)
                 {
+                    // 如果等待结果的过程中发生了当前线程打断 .., 那么重新设置打断状态,并抛出异常 ..
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(ie);
                 }

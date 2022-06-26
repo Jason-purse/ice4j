@@ -24,6 +24,9 @@ import java.time.Duration
 import org.jitsi.config.JitsiConfig.Companion.newConfig as configSource
 
 class HarvestConfig {
+    /**
+     * 收集候选的时候,是否使用链路本地地址 ...
+     */
     val useLinkLocalAddresses: Boolean by config {
         "org.ice4j.ice.harvest.DISABLE_LINK_LOCAL_ADDRESSES".from(configSource)
             .transformedBy { !it }
@@ -31,6 +34,9 @@ class HarvestConfig {
     }
     fun useLinkLocalAddresses() = useLinkLocalAddresses
 
+    /**
+     * 指定socket 接收缓存区大小,默认 OS 系统默认配置 ..
+     */
     val udpReceiveBufferSize: Int? by optionalconfig {
         "org.ice4j.ice.harvest.AbstractUdpListener.SO_RCVBUF".from(configSource)
         "ice4j.harvest.udp.receive-buffer-size".from(configSource)
@@ -84,6 +90,9 @@ class HarvestConfig {
         "org.ice4j.ice.harvest.NAT_HARVESTER_PUBLIC_ADDRESS".from(configSource)
     }
 
+    /**
+     * 静态映射 ... 最简单的方式 ..
+     */
     private val staticMappingsFromNewConfig: Set<StaticMapping> by config {
         "ice4j.harvest.mapping.static-mappings".from(configSource)
             .convertFrom<List<Config>> { cfg ->

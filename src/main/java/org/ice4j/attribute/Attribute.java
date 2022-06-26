@@ -33,9 +33,12 @@ import org.ice4j.*;
  *
  *    The following types are defined:
  *
+ *    这个类应该参考了三分文档  https://www.rfc-editor.org/rfc/pdfrfc/rfc3489.txt.pdf$11.2 Message Attributes
+ *    https://www.rfc-editor.org/rfc/pdfrfc/rfc5389.txt.pdf$STUN Attribute Registry
+ *
  * STUN attributes:
  *    0x0001: MAPPED-ADDRESS
- *    0x0002: RESPONSE-ADDRESS
+ *    0x0002: RESPONSE-ADDRESS ( 这一部分依旧是 https://www.rfc-editor.org/rfc/pdfrfc/rfc5389.txt.pdf,最新版本已经变为保留) ..
  *    0x0003: CHANGE-REQUEST
  *    0x0004: SOURCE-ADDRESS
  *    0x0005: CHANGED-ADDRESS
@@ -48,10 +51,15 @@ import org.ice4j.*;
  *    0x0014: REALM
  *    0x0015: NONCE
  *    0x0020: XOR-MAPPED-ADDRESS
+ *
+ *    // ----- https://www.rfc-editor.org/rfc/pdfrfc/rfc5389.txt.pdf$18.2. STUN Attribute Registry
  *    0x8022: SOFTWARE
  *    0x8023: ALTERNATE-SERVER
  *    0x8028: FINGERPRINT
  *
+ *
+ * // 以下属于TURN 对STUN 协议的补充属性 ..
+ * https://www.rfc-editor.org/rfc/rfc8656.pdf$STUN Attributes
  * TURN attributes:
  *    0x000C: CHANNEL-NUMBER
  *    0x000D: LIFETIME
@@ -228,9 +236,12 @@ public abstract class Attribute
      * Connection Id attribute.
      * TURN TCP support attribute
      */
+    // https://www.rfc-editor.org/rfc/pdfrfc/rfc6062.txt.pdf
     public static final char CONNECTION_ID = 0x002a;
 
+
     /* Old TURN attributes */
+    // https://datatracker.ietf.org/doc/pdf/draft-rosenberg-midcom-turn-08 从这里可以查到这个三个属性 ...
     /**
      * Magic cookie attribute.
      */
@@ -247,6 +258,7 @@ public abstract class Attribute
     public static final char REMOTE_ADDRESS = 0x0012;
 
     /* ICE attributes */
+    // https://www.rfc-editor.org/rfc/pdfrfc/rfc8445.txt.pdf
     /**
      * Priority attribute.
      */
@@ -266,6 +278,8 @@ public abstract class Attribute
      * ICE controlling attribute.
      */
     public static final char ICE_CONTROLLING = 0x802a;
+
+    // 属性的类型 ...
 
     /**
      * The type of the attribute.
@@ -354,6 +368,7 @@ public abstract class Attribute
      * stores their original location in the binary array so that we could
      * later more easily verify attributes like MESSAGE-INTEGRITY.
      *
+     * 这个属性距离当前消息的二进制数组表示的原始位置 ...
      * @param index the original location of this attribute in the datagram
      * we got off the wire
      */
@@ -377,6 +392,8 @@ public abstract class Attribute
 
     /**
      * Sets this attribute's fields according to attributeValue array.
+     *
+     * 根据属性二进制数组 设置属性的字段 ...
      *
      * @param attributeValue a binary array containing this attribute's field
      * values and NOT containing the attribute header.

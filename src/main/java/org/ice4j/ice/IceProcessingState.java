@@ -34,6 +34,15 @@ package org.ice4j.ice;
  * checks any more and is ready for garbage collection. This is the state we
  * refer to with "Terminated".
  *
+ * RFC 5245 提到 ICE 处理所有媒体流
+ * 这个状态等于 Running (当ICE 正在运行中) ...
+ * 等于完成(ICE 处理完成或者失败(如果它没有成功))
+ * 为了方便我们也增加了两个额外的状态 , 第一个状态是等待(它在开始处理之前的一个Agent的状态) ..
+ * 第二个是 中断状态 (RFC 5245 说一旦ICE 处理已经达到了完成状态(那么所有的peers的媒体流将使用这些候选) ..
+ * 这个代理应该等待额外的三秒时间 并且 停止相关的检查 或者生成候选对象的触发检查 ..
+ * 此时这个候选也许是自由的(可用的) ..
+ * 这反映了 一个代理不需要处理进入的检查并准备好垃圾回收的状态 ... 所以我们指定为中断的 ...状态...
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  */

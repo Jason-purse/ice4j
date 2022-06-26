@@ -32,6 +32,8 @@ import org.ice4j.stack.*;
  * does is send a binding request through a specified port and return the
  * mapped address it got back or <tt>null</tt> if there was no response.
  *
+ * 这个类提供了发现一个共有IP 地址的基本含义 ..
+ * 它通过指定端口发送一个绑定请求 并且返回映射的地址(它成功响应) / 否则为 null ...
  * @author Emil Ivov
  */
 public class SimpleAddressDetector
@@ -92,6 +94,7 @@ public class SimpleAddressDetector
 
     /**
      * Puts the discoverer into an operational state.
+     * 通过 StunStack 进行数据交换 ...
      */
     public void start()
     {
@@ -104,6 +107,8 @@ public class SimpleAddressDetector
      * @param socket the socket whose address needs to be resolved.
      * @return a StunAddress object containing the mapped address or null if
      * discovery failed.
+     *
+     * 尝试创建一个监听点 - 针对指定的socket 并且尝试发现这个本地地址是如何进行NAT 映射的 ...
      *
      * @throws IOException if something fails along the way.
      * @throws BindException if we cannot bind the socket.

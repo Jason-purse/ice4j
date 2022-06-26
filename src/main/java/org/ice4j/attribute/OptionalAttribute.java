@@ -28,6 +28,9 @@ import org.ice4j.*;
  * dealing with attributes in received messages, and generating messages
  * containing attributes not explicitly supported by the stack.
  *
+ * 这个类被用来 呈现一个属性(并没有由这个stack 显式支持的属性)
+ * 例如一个属性将保持 二进制形式(这个栈后续不会抗拒处理) ...
+ * 使用这个类可以处理接收消息中的属性  并且生成包含这个栈不显式支持的属性 ...
  * @author Emil Ivov
  */
 public class OptionalAttribute

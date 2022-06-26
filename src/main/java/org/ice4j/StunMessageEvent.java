@@ -27,6 +27,10 @@ import org.ice4j.stack.*;
  * as well as the Descriptor of the NetAccessPoint that received it (In case the
  * stack is used on more than one ports/addresses).
  *
+ *
+ * 这个类被用来派发进入的stun 消息,除了消息自身能够包含这个消息来源地址 ...(由服务器实现用来决定映射地址) ...
+ * 同样NetAccessPoint 的描述符能够获取它(在这种情况下,stack 能够使用在超过一个端口 / 地址上) ..
+ *
  * @author Emil Ivov
  */
 public class StunMessageEvent

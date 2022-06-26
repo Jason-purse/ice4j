@@ -33,6 +33,9 @@ import org.ice4j.socket.*;
  * datagrams to the STUN server specified by the
  * original NetAccessPointDescriptor.
  *
+ * 这是一个网络访问点(这个stack 的最外部的部分) ...
+ * 它是围绕着一个UDP SOCKET 构造并且关心转发进入的消息到指定的messageConsumer - 同样它将发送数据包到STUN 服务器(通过原始的 NetAccessPointDescriptor) ..
+ *
  * @author Emil Ivov
  */
 class Connector
@@ -51,6 +54,7 @@ class Connector
 
     /**
      * The socket object that used by this access point to access the network.
+     * 通过这个访问点访问网络的socket对象(它才是核心) .
      */
     private IceSocketWrapper sock;
 

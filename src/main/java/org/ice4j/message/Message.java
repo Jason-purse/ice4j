@@ -32,6 +32,13 @@ import org.ice4j.stack.*;
  * STUN attributes, the set of which depends on the message type.  The STUN
  * header contains a STUN message type, transaction ID, and length.
  *
+ * 这个类呈现了一个STUN 消息,消息是 TLV(type - length -value) 编码(通过大端顺序 网络顺序)二进制形式 ..
+ * 所有的STUN 消息使用一个STUN 头开始 ... 后跟随一个stun payload ...
+ * 这个payload 是一系列的STUN 属性... 依赖于消息类型(这个集合)
+ * STUN header 包含了一个STUN 消息类型 , 事务ID / 长度 ...
+ *
+ * rfc: https://www.rfc-editor.org/rfc/pdfrfc/rfc8489.txt.pdf
+ *
  * @author Emil Ivov
  * @author Sebastien Vincent
  * @author Lyubomir Marinov
@@ -49,32 +56,64 @@ public abstract class Message
     /**
      * The mask of the two bits from the message type structure, which indicate
      * the message class.
+     *
+     * 来自消息类型结构中的两位掩码 它代表了消息的类 ..
+     *
+     * 二进制码 0000_0001 0001_0000
+     *               c1   c0
      */
     private static final char MESSAGE_CLASS_MASK = 0x0110;
 
+
+    // 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    // +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |M |M |M|M|M|C|M|M|M|C|M|M|M|M|
+    // |11|10|9|8|7|1|6|5|4|0|3|2|1|0|
+    // +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
+    // M11 through M0 represent a 12-bit encoding of the method.
+    // C1 and C0 represent a
+    // 2-bit encoding of the class.
+    // A class of 0b00 is a request, a class
+    // of 0b01 is an indication, a class of 0b10 is a success response, and
+    // a class of 0b11 is an error response.
+    // 这个规范定义了  a single method, Binding.
+    // 方法和类是正交的，因此对于每个方法，该方法都可以有请求、成功响应、错误响应和指示。定义新方法的扩展必须指示该方法允许哪些类。
+
+    // ---------------------------------- 以下是放入M .. 表中组成的16进制码 ..代表着class
     /**
+     *
+     * 因为  A class of 0b00 is a request => 根据上面的规则进行 映射 0x0000
      * STUN request code.
      */
     public static final char STUN_REQUEST = 0x0000;
 
     /**
      * STUN indication code.
+     *
+     *  indication class 是 0b01
+     *  于是它的mask 是 0x0010(因为只有5号位 等于 c0 等于1)
      */
     public static final char STUN_INDICATION = 0x0010;
 
     /**
      * STUN success response code.
+     * 0b10(这个其实就是 class code) 映射为 16进制而已 ..
+     * 同样 c0 = 0 ,c1 = 1 ,于是 12位mask => 16进制 0x0100
      */
     public static final char STUN_SUCCESS_RESP = 0x0100;
 
     /**
      * STUN error response code.
+     * a class of 0b11 is an error response.
      */
     public static final char STUN_ERROR_RESP = 0x0110;
 
+
+    // ------------------------------ 表示stun binding方法 ....
     /* STUN methods */
     /**
      * STUN binding method.
+     * method=0b000000000001 (Binding)
      */
     public static final char STUN_METHOD_BINDING = 0x0001;
 
@@ -135,6 +174,9 @@ public abstract class Message
 
     /**
      * TURN data method code.
+     * 00000000 00000111
+     * +
+     * 00000000 00010111
      */
     public static final char TURN_METHOD_DATA = 0x0007;
 
@@ -303,6 +345,7 @@ public abstract class Message
 
     /**
      * TURN Send request.
+     * 0000_0001 0001_0101
      */
     public static final char OLD_DATA_INDICATION = 0x0115;
 
@@ -331,6 +374,7 @@ public abstract class Message
     public static final byte[] MAGIC_COOKIE = { 0x21, 0x12, (byte)0xA4, 0x42 };
 
     /**
+     *  96 bits / 8 = 12 bytes
      * The length of the transaction id (in bytes).
      */
     public static final byte TRANSACTION_ID_LENGTH = 12;
@@ -1052,6 +1096,8 @@ public abstract class Message
 
     /**
      * Constructs a message from its binary representation.
+     *
+     * 根据消息的二进制呈现  构建一个消息 ...
      * @param binMessage the binary array that contains the encoded message
      * @param offset the index where the message starts.
      * @param arrayLen the length of the message
@@ -1066,12 +1112,15 @@ public abstract class Message
         int originalOffset = offset;
         arrayLen = Math.min(binMessage.length, arrayLen);
 
+        // 一个消息Header 20 字节
         if (arrayLen - offset < Message.HEADER_LENGTH)
         {
             throw new StunException( StunException.ILLEGAL_ARGUMENT,
                          "The given binary array is not a valid StunMessage");
         }
 
+        // 由于是大端 序,所以 放大8倍,然后合并首尾数字 ...
+        // 消息类型 由 class /  method 组合而成
         char messageType = (char)((binMessage[offset++] << 8)
                                | (binMessage[offset++] & 0xFF));
 
@@ -1099,9 +1148,12 @@ public abstract class Message
 
         if (!Arrays.equals(MAGIC_COOKIE, cookie))
         {
+            // 不等于这个cookie 值 兼容3489?
+            // 也就是说 3489中  没有magic cookie ..
             rfc3489Compat = true;
         }
 
+        // 如果这个剩余长度小于 12字节,那么这个消息有误 ..
         if (arrayLen - offset - TRANSACTION_ID_LENGTH < length)
         {
             throw
@@ -1116,13 +1168,16 @@ public abstract class Message
                             + (offset + TRANSACTION_ID_LENGTH + length));
         }
 
+        // 否则准备 12字节 ...
         byte[] tranID = new byte[TRANSACTION_ID_LENGTH];
         System.arraycopy(binMessage, offset, tranID, 0, TRANSACTION_ID_LENGTH);
         try
         {
+            // 但是如果是 3489 兼容,那么长度必须是16字节 ..
             if (rfc3489Compat)
             {
                 byte[] rfc3489TranID = new byte[TRANSACTION_ID_LENGTH + 4];
+                // 然后将cookie的内容先cookie .. 然后再拼接后面的数据 ...
                 System.arraycopy(cookie, 0, rfc3489TranID, 0, 4);
                 System.arraycopy(tranID, 0, rfc3489TranID, 4,
                         TRANSACTION_ID_LENGTH);
@@ -1142,6 +1197,10 @@ public abstract class Message
 
         offset += TRANSACTION_ID_LENGTH;
 
+        // 此时,这个偏距 已经解析了消息头..然后解析每一个属性 ..
+        // https://www.rfc-editor.org/rfc/pdfrfc/rfc3489.txt.pdf
+        // 每一个属性值Type-Length-VALUE
+//        2字节 type + 2字节长度(Length) + 属性的长度 通过字节长度中的记录值进行评估
         while (offset - Message.HEADER_LENGTH < length)
         {
             Attribute att = AttributeDecoder.decode(
@@ -1168,10 +1227,12 @@ public abstract class Message
      * Executes actions related specific attributes like asserting proper
      * fingerprint checksum.
      *
+     * 执行规范属性相关的动作(例如断言 可能的 fingerprint checksum)
+     *
      * @param attribute the <tt>Attribute</tt> we'd like to process.
      * @param binMessage the byte array that the message arrived with.
-     * @param offset the index where data starts in <tt>binMessage</tt>.
-     * @param msgLen the number of message bytes in <tt>binMessage</tt>.
+     * @param offset the index where data starts in <tt>binMessage</tt>. 消息开始
+     * @param msgLen the number of message bytes in <tt>binMessage</tt>. 消息长度
      *
      * @throws StunException if there's something in the <tt>attribute</tt> that
      * caused us to discard the whole message (e.g. an invalid checksum or
@@ -1273,6 +1334,8 @@ public abstract class Message
 
     /**
      * Determines if the message type is a Success Response.
+     *
+     * 判断是否为成功响应 ...
      * @param type type to test
      * @return true if the type is Success Response, false otherwise
      */
@@ -1284,6 +1347,8 @@ public abstract class Message
     /**
      * Determines whether type could be the type of a STUN Response (as opposed
      * to STUN Request).
+     *
+     * 判断一个类型是否是STUN 的响应类型 ..(对比STUN Request) ..
      * @param type the type to test.
      * @return true if type is a valid response type.
      */

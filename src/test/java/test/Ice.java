@@ -295,12 +295,14 @@ public class Ice
      * value of <tt>isTrickling</tt>) and adds to it an audio and a video stream
      * with RTP and RTCP components.
      *
+     * 创建一个 ICE 代理(普通 / 慢慢处理,依赖于 isTrickling 并使用RTP 和 RTCP 组件为它增加音频流和视频流 )
+     *
      * @param rtpPort the port that we should try to bind the RTP component on
      * (the RTCP one would automatically go to rtpPort + 1)
      * @return an ICE <tt>Agent</tt> with an audio stream with RTP and RTCP
      * components.
      * @param isTrickling indicates whether the newly created agent should be
-     * performing trickle ICE.
+     * performing trickle ICE.( 只是是否这个新创建的代理应该执行 trickle ICE) ...
      *
      * @throws Throwable if anything goes wrong.
      */
@@ -320,7 +322,13 @@ public class Ice
      * @return an ICE <tt>Agent</tt> with an audio stream with RTP and RTCP
      * components.
      * @param isTrickling indicates whether the newly created agent should be
-     * performing trickle ICE.
+     * performing trickle ICE.(这个代理是否应该执行涓流ICE,也就是将发现的ICE 候选对象直接传输,而不等待所有的ICE候选对象检查完毕,降低对等连接延迟)
+     *                    详情:
+     *
+     *                       https://webrtc.org/getting-started/peer-connections#trickle_ice
+     *
+     *
+     *                    这个Harvester 应该是用来进行 IP 在NAT 中进行转换的 ...
      * @param harvesters the list of {@link CandidateHarvester}s that the new
      * agent should use or <tt>null</tt> if it should include the default ones.
      *

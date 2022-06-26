@@ -20,6 +20,7 @@ package org.ice4j.stack;
 /**
  * Generic Error Handler.
  *
+ *  通用错误处理的回调 ...
  * @author Emil Ivov
  */
 interface ErrorHandler
@@ -28,6 +29,8 @@ interface ErrorHandler
      * Called when an error has occurred which may have caused data loss but the
      * calling thread is still running.
      *
+     * 例如错误出现(数据丢失,但是调用线程仍在运行) 时触发 。。
+     *
      * @param message A message describing the error
      * @param error   The error itself.
      */
@@ -35,7 +38,7 @@ interface ErrorHandler
 
     /**
      * Called when a fatal error has occurred and the calling thread will exit.
-     *
+     * 出现了一个致命错误且调用线程将会退出 调用 ...此回调 ..
      * @param callingThread the thread where the error has occurred
      * @param message       a message describing the error.
      * @param error         the error itself.

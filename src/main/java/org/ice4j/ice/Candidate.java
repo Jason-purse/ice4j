@@ -26,6 +26,11 @@ import org.ice4j.*;
  * contact for receipt of media. Candidates also have properties - their
  * type (server reflexive, relayed or host), priority, foundation,
  * and base.
+ *
+ * 一个候选代表了一个传输地址(媒体接收的潜在联系人) ... 候选者可以有属性,它们的类型(服务器 reflexive ??,中继 / 主机), 优先级 / 根本 / 基础 ..
+ *
+ * 当前这个类仅仅支持UDP 候选(In this case—and only this case—a STUN server is used to find the network-facing address of a peer), 但是ICE 框架本身支持 4种算法 ..
+ * https://developer.mozilla.org/en-US/docs/Glossary/ICE
  * <p>
  * At this point this class only supports UDP candidates. Implementation of
  * support for other transport protocols should mean that this class should
@@ -33,6 +38,12 @@ import org.ice4j.*;
  * example should be brought down the inheritance chain.
  * </p>
  *
+ *
+ * 收集候选的过程仅仅是初始化代理的过程
+ * 推荐当候选消息被接收立即让相关的代理进行此过程,在告知应用的用户和一个ICE 会话关联之前 ...
+ *
+ *
+ * 这个类包含了候选本身拥有的东西 ...
  * @author Emil Ivov
  * @author Lyubomir Marinov
  */
@@ -69,6 +80,15 @@ public abstract class Candidate<T extends Candidate<?>>
      * hence this implementation) only defines for candidate types: host,
      * server reflexive, peer reflexive and relayed candidates. Others may be
      * added in the future.
+     *
+     * https://www.rfc-editor.org/rfc/pdfrfc/rfc8445.txt.pdf$5.1. Full Implementation$5.1.1. Gathering Candidates
+     *
+     *  The server-reflexive candidates are gathered using STUN or TURN
+     *  relayed candidates are obtained through TURN.
+     *  Peer-reflexive candidates are obtained in later phases of ICE
+     *
+     *
+     *
      */
     private CandidateType candidateType;
 
@@ -248,11 +268,20 @@ public abstract class Candidate<T extends Candidate<?>>
     }
 
     /**
+     * 设置候选的 base 属性 ... 一个server reflexive 候选的base 是 这个候选是由那个Host 候选衍生的 ...
+     * host 候选也可以有base  == 它自身, 类似的  中继候选的base 也等于候选自身 ...
      * Sets this <tt>Candidate</tt>'s base. The base of a server
      * reflexive candidate is the host candidate from which it was derived.
      * A host candidate is also said to have a base, equal to that candidate
      * itself. Similarly, the base of a relayed candidate is that candidate
      * itself.
+     *
+     * The transport address that an ICE agent sends from for a
+     *  particular candidate. For host, server-reflexive, and peer-
+     *  reflexive candidates, the base is the same as the host candidate.
+     *  For relayed candidates, the base is the same as the relayed
+     *  candidate (i.e., the transport address used by the TURN server to
+     *  send from).
      *
      * @param base the base <tt>Candidate</tt> of this <tt>Candidate</tt>.
      */

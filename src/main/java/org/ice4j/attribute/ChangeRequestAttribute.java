@@ -41,6 +41,14 @@ import org.ice4j.*;
  *    server to send the Binding Response with a different port than the
  *    one the Binding Request was received on.
  *
+ *
+ * 这个类呈现了一个STUN CHANGE-REQUEST 属性,这个CHANGE-REQUEST 属性主要是被客户端用来请求服务器使用不同的地址或者端口去发送响应 ...
+ * 这个属性具有32bits .. 尽管只有两个bits被使用 ..
+ *
+ * 这个flag的含义是
+ * A: 这是一个change IP 标志 ... 如果为true,它表示当请求服务器接收到一个Binding Request的时候 使用不同的IP 地址发送Binding Response ..
+ * B. 这是一个change port 标志,那么同上,使用不同的端口进行Binding Response 发送 ..
+ *
  * @author Emil Ivov
  */
 
@@ -157,6 +165,8 @@ public class ChangeRequestAttribute
      * requests the server to send the Binding Response with a different IP
      * address than the one the Binding Request was received on.
      *
+     * 如果为true, 这个flag 表示了请求服务器发送一个具有不同IP的Binding Response(当BindingRequest 被接收的时候) ..
+     *
      * @param changeIP the new value of the changeIpFlag.
      */
     public void setChangeIpFlag(boolean changeIP)
@@ -215,7 +225,9 @@ public class ChangeRequestAttribute
          throws StunException
      {
          offset += 3; // first three bytes of change req att are not used
+         // 取第三位
          setChangeIpFlag((attributeValue[offset] & 4) > 0);
+         // 取第二位
          setChangePortFlag((attributeValue[offset] & 0x2) > 0);
      }
 }

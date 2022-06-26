@@ -24,7 +24,7 @@ import java.util.logging.*;
 
 /**
  * Utility methods and fields to use when working with network addresses.
- *
+ *  网络地址相关的工具方法和字段使用 ...
  * @author Emil Ivov
  * @author Damian Minkov
  * @author Vincent Lucas
@@ -643,6 +643,8 @@ public class NetworkUtils
     }
 
     /**
+     *
+     * 判断一个网卡是不是回环网卡 ... 它作为一个java 1.6 出现的NetWorkInterface.isLoopback()方法的替代 ...
      * Determines whether or not the <tt>iface</tt> interface is a loopback
      * interface. We use this method as a replacement to the
      * <tt>NetworkInterface.isLoopback()</tt> method that only comes with
@@ -657,6 +659,7 @@ public class NetworkUtils
     {
         try
         {
+            // 有可能没有java 1.6 (jvm 运行版本很低) ...
             Method method = iface.getClass().getMethod("isLoopback");
 
             return (Boolean) method.invoke(iface);
@@ -666,6 +669,8 @@ public class NetworkUtils
             //apparently we are not running in a JVM that supports the
             //is Loopback method. we'll try another approach.
         }
+        // 尝试另外一种方式 ... 获取这个网卡上的所有ip地址,判断 isLoopbackAddress() ..
+        // 看来国外 也希望兼容到1.5以上 ..
         Enumeration<InetAddress> addresses = iface.getInetAddresses();
 
         return addresses.hasMoreElements()
@@ -676,7 +681,9 @@ public class NetworkUtils
      * Determines, if possible, whether or not the <tt>iface</tt> interface is
      * up. We use this method so that we could use {@link
      * java.net.NetworkInterface}'s <tt>isUp()</tt> when running a JVM that
-     * supports it and return a default value otherwise.
+     * supports it and return a default value otherwise
+     *.
+     * 判断网卡是否打开 ...
      *
      * @param iface the interface that we'd like to determine as Up or Down.
      *

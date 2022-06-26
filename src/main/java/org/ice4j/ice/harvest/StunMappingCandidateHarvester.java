@@ -28,6 +28,7 @@ import java.util.logging.*;
 /**
  * A {@link MappingCandidateHarvester} which uses a STUN servers to discover its public IP address.
  *
+ * 一个MappingCandidateHarvester 它使用STUN 服务器发现它的共有IP 地址 ..
  * @author Damian Minkov
  * @author Boris Grozev
  */
@@ -78,6 +79,9 @@ public class StunMappingCandidateHarvester
      * Attempts to discover the the public address (mask) via the STUN server.
      * Note that this will block until we either receive a response from the
      * STUN server, or a timeout occurs.
+     *
+     * 尝试通过STUN 服务器发现 共有地址(面具) ..
+     * 注意到它将会被阻塞直到接收到Stun 服务器的响应或者超时..
      */
     public void discover()
     {

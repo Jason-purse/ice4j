@@ -24,6 +24,7 @@ import org.ice4j.ice.*;
 /**
  * The Address class is used to define destinations to outgoing Stun Packets.
  *
+ * 这个地址类 被用来定义外出STUN 包的目标地址 ...
  * @author Emil Ivov
  * @author Lubomir Marinov
  */

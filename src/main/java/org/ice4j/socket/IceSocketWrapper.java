@@ -22,7 +22,7 @@ import java.net.*;
 
 /**
  * Abstract socket wrapper that define a socket that could be UDP, TCP...
- *
+ *  这个抽象Socket wrapper 定义了socket 是UDP / TCP ...
  * @author Sebastien Vincent
  */
 public abstract class IceSocketWrapper

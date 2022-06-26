@@ -21,6 +21,8 @@ package org.ice4j;
  * The <tt>Transport</tt> enumeration contains all currently known transports
  * that ICE may be interacting with (but not necessarily support).
  *
+ * 传输 枚举(包含了所有当前已知的所有传输方式 - ICE 交互(但不是一定支持的) ...
+ *
  * @author Emil Ivov
  */
 public enum Transport

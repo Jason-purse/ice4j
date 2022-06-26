@@ -26,6 +26,8 @@ import java.util.logging.*;
  * The class contains a number of property names and their default values that
  * we use to configure the behavior of the ice4j stack.
  *
+ * 这个类包含了大量的属性名 以及 它们的默认值( 我们将用来配置ice4j stack (协议栈)的行为) ..
+ *
  * @author Emil Ivov
  */
 public class StackProperties
@@ -103,6 +105,7 @@ public class StackProperties
     /**
      * The name of the property that allows us to tell the stack to always
      * sign STUN messages with a FINGERPRINT attribute.
+     * 这个属性的名称 允许我们告诉这个stack 总是通过FINGERPRINT 属性签名 STUN 消息 ...
      */
     public static final String ALWAYS_SIGN
                                 = "org.ice4j.ALWAYS_SIGN";
@@ -135,6 +138,8 @@ public class StackProperties
     /**
      * The name of the allowed interfaces property which specifies the allowed
      * interfaces for host candidate allocations.
+     *
+     * 那些网卡可以作为host 候选收集 ..
      */
     public static final String ALLOWED_INTERFACES
             = "org.ice4j.ice.harvest.ALLOWED_INTERFACES";
@@ -142,6 +147,8 @@ public class StackProperties
     /**
      * The name of the allowed interfaces property which specifies the blocked
      * interfaces for host candidate allocations.
+     *
+     * 那些网卡应该被搬掉,不应该用于host 候选收集 ..
      */
     public static final String BLOCKED_INTERFACES
             = "org.ice4j.ice.harvest.BLOCKED_INTERFACES";

@@ -25,6 +25,8 @@ import java.util.*;
 /**
  * Implements ice4j internal nomination strategies.
  *
+ * ice4j 的内部提名策略 实现..
+ *
  * @author Emil Ivov
  */
 public class DefaultNominator

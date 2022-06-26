@@ -24,17 +24,35 @@ import java.util.*;
  * transaction IDs in collection objects as it implements the equals method.
  * It also provides a utility for creating unique transaction IDs.
  *
+ * 这个类封装了一个STUN 的事务id(因为事务ID 将存储在集合中所以它实现了equals方法) ...
+ * 它也提供了工具为了方便的创建事务ID ...
+ *
+ * 也就是说,对于请求/ 响应事务,它们的事务id 由STUN 客户端为请求选择 并且 服务器在响应中应答 ...
+ * 对于 indications, 由代理选择去发送indication ..
+ * 主要作用是关联请求和响应 ... 虽然它也能够扮演一定的角色去帮助抵御一些类型的攻击 ..
+ * 服务器也会使用事务id 作为一个key 去独一无二的表示所有客户端的每一个事务 ...
+ * 正因如此,事务ID 必须独一无二且随机从 0 .. 2^96-1 次方的区间中选择 并且是一个加密随机数 ..
+ * 相同请求的重新发送必须使用相同的事务ID,但是对于新的事务必须选择新的事务ID(除非新请求在位上与以前的请求相同，并且从同一传输地址发送到同一 IP 地址)...
+ * 成功 / 错误响应 必须携带相同的事务ID 同它们相关的请求中的事务ID ...
+ * 当一个代理作为STUN 服务器 并且也作为STUN 客户端 工作在同一个端口上,那么这个由代理发送的请求中的事务ID 和由这个代理接收到的请求中的事务ID没有任何关系 ...
+ *
+ * 并且这个事务ID 的最后两个bits 总是 0, 这可以用来区分STUN 包 和其他协议 ...
+ *
+ *
+ *
+ *
  * @author Emil Ivov
  */
 public class TransactionID
 {
     /**
-     * RFC5289 Transaction ID length.
+     * RFC5389 Transaction ID length.
      */
     public static final int RFC5389_TRANSACTION_ID_LENGTH = 12;
 
     /**
      * RFC3489 Transaction ID length.
+     * 128-bit -> 16字节
      */
     public static final int RFC3489_TRANSACTION_ID_LENGTH = 16;
 
@@ -45,11 +63,13 @@ public class TransactionID
 
     /**
      * Any object that the application would like to correlate to a transaction.
+     * 和这个事务关联一个应用的对象 ...
      */
     private Object applicationData = null;
 
     /**
      * The object to use to generate the rightmost 8 bytes of the id.
+     * 这个对象被用来生成 最右边 8位 ..
      */
     private static final Random random
         = new Random(System.currentTimeMillis());
@@ -120,22 +140,29 @@ public class TransactionID
     /**
      * Generates a random transaction ID
      *
+     * 生成一个随机的事务ID ....
+     *
      * @param tid transaction ID
      * @param nb number of bytes to generate
      */
     private static void generateTransactionID(TransactionID tid, int nb)
     {
+        // 前6位 ..
         long left  = System.currentTimeMillis(); //the first nb/2 bytes of the id
+        // 后6位..
         long right = random.nextLong(); //the last nb/2 bytes of the id
         int b = nb / 2;
 
         for (int i = 0; i < b; i++)
         {
+            // 一个long 想要存在 6个字节中 ...
+            // long 是8字节 ...
             tid.transactionID[i]   = (byte)((left  >> (i * 8)) & 0xFFL);
             tid.transactionID[i + b] = (byte)((right >> (i * 8)) & 0xFFL);
         }
 
         //calculate hashcode for Hashtable storage.
+        // 计算它的hash 值 用于Hashtable存储 ...
         tid.hashCode =   (tid.transactionID[3] << 24 & 0xFF000000)
                        | (tid.transactionID[2] << 16 & 0x00FF0000)
                        | (tid.transactionID[1] << 8  & 0x0000FF00)

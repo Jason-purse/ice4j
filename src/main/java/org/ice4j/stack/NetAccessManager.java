@@ -36,6 +36,10 @@ import java.util.logging.*;
  * provides equivalent STUN abstractions. Instances that operate with
  * the NetAccessManager are only supposed to understand STUN talk and
  * shouldn't be aware of datagrams sockets, and etc.
+ *
+ * 管理连接器 以及 消息处理任务执行 以及池化 ..
+ * 这个类提供(掩盖网络基元层并提供 等价的STUN 抽象)
+ * 使用NetAccessManager 操作仅仅为了理解STUN 的谈话 并 不会感知数据包 socket(UDP) .. 以及其他 ..
  * 
  * @author Emil Ivov
  * @author Aakash Garg
@@ -62,12 +66,17 @@ public class NetAccessManager
      * Maximum number of {@link MessageProcessingTask} to keep in object pool.
      * Each {@link NetAccessManager} has it's own pool, small pool size is
      * enough to save allocations.
+     *
+     * 保存 MessageProcessingTask到 对象池的最大数量 ..
+     * 每一个NeetAccessManager 都有自己的池 ... 最小池足够节约分配 ..
      */
     private static final int TASK_POOL_SIZE = 8;
 
     /**
      * Pool of <tt>MessageProcessingTask</tt> objects to avoid extra-allocations
      * of processor object per <tt>RawMessage</tt> needed to process.
+     * MessageProcessingTask 对象池(避免额外的处理器对象分配 - 对每一个需要处理的RawMessage)
+     *
      */
     private final ArrayBlockingQueue<MessageProcessingTask> taskPool
         = new ArrayBlockingQueue<>(TASK_POOL_SIZE);
@@ -76,6 +85,10 @@ public class NetAccessManager
      * The set of {@link MessageProcessingTask}'s which are not yet finished
      * it's, processing, tracking of active tasks is necessary to properly
      * cancel pending tasks in case {@link #stop()} is called.
+     *
+     * 它是一个MessageProcessingTask 集合(这些都是可能还没有完成的,存活任务的跟踪 / 处理可能有必要去取消等待的任务,如果它的stop 已经被调用)..
+     *
+     * 视图 ...
      */
     private final ConcurrentHashMap.KeySetView<MessageProcessingTask, Boolean>
         activeTasks = ConcurrentHashMap.newKeySet();
@@ -86,10 +99,17 @@ public class NetAccessManager
      * a <tt>Connector</tt>. We allow a <tt>Connector</tt> to be added without
      * a specified remote address, under the <tt>null</tt> key.
      *
+     * 当前使用UDP 的连接器(这个表映射了本地传输地址 以及一个和对象(远程传输地址及连接器)
+     * 在null Key 的情况下 ..我们允许一个连接器能够被增加而无需指定一个远程地址
+     *
      * Due to the final hashCode() method of InetSocketAddress, TransportAddress
      * cannot override and it causes problem to store both UDP and TCP address
      * (i.e. 192.168.0.3:5000/tcp has the same hashcode as 192.168.0.3:5000/udp
      * because InetSocketAddress does not take into account transport).
+     *
+     * 由于InetSocketAddress 的 final hashCode 函数, TransportAddress 不能够覆盖 并它可能会造成问题(在同时存储UDP / TCP 地址的时候)
+     * // 例如(192.168.0.3:500/tcp 和 ..../udp有相同的hashCode) ..
+     * 因为InetSocketAddress 不关心传输 ...
      */
     private final Map<TransportAddress, Map<TransportAddress, Connector>>
         udpConnectors
@@ -105,6 +125,8 @@ public class NetAccessManager
      * cannot override and it causes problem to store both UDP and TCP address
      * (i.e. 192.168.0.3:5000/tcp has the same hashcode as 192.168.0.3:5000/udp
      * because InetSocketAddress does not take into account transport).
+     *
+     * 使用TCp 的连接器映射...
      */
     private final Map<TransportAddress, Map<TransportAddress, Connector>>
         tcpConnectors
@@ -113,6 +135,8 @@ public class NetAccessManager
     /**
      * The instance that should be notified when an incoming message has been
      * processed and ready for delivery
+     *
+     *  当进入的消息已经处理且准备发送时 触发这个实例的回调 ..
      */
     private final MessageEventHandler messageEventHandler;
 
@@ -131,24 +155,31 @@ public class NetAccessManager
     /**
      * The <tt>StunStack</tt> which has created this instance, is its owner and
      * is the handler that incoming message requests should be passed to.
+     *
+     * 这个StunStack 是这个网络访问管理器的拥有者和进入消息请求的处理器 ...
      */
     private final StunStack stunStack;
 
     /**
      * Indicates if this <tt>NetAccessManager</tt> is stopped
+     * 这是一个指示器,NetAccessManager 已经停止了 ...
      */
     private final AtomicBoolean isStopped = new AtomicBoolean(false);
 
     /**
      * Callback to be called when scheduled <tt>MessageProcessingTask</tt>
      * completes processing it's <tt>RawMessage</tt>.
+     *
+     * 当调度一个消息处理任务完成时,处理这个原始消息 ..
      */
     private final Consumer<MessageProcessingTask> onRawMessageProcessed
         = messageProcessingTask -> {
 
         activeTasks.remove(messageProcessingTask);
 
+        // 将处理完毕的对象放入任务池中,以便重用 ..
         final boolean isAdded = taskPool.offer(messageProcessingTask);
+        // 如果无法加入 应该是池已经满了 ...
         if (!isAdded && logger.isLoggable(Level.FINEST))
         {
             logger.finest("Dropping MessageProcessingTask for "
@@ -175,9 +206,11 @@ public class NetAccessManager
      * @param stunStack the <tt>StunStack</tt> which is creating the new
      *            instance, is going to be its owner and is the handler that
      *            incoming message requests should be passed to
+     *                  进入消息请求的处理器以及拥有者 ...
      * @param peerUdpMessageEventHandler the <tt>PeerUdpMessageEventHandler</tt>
      *            that will handle incoming UDP messages which are not STUN
      *            messages and ChannelData messages.
+     *                                   进入的UDP消息(非 STUN 消息和ChannelData 消息) ...
      * @param channelDataEventHandler the <tt>ChannelDataEventHandler</tt> that
      *            will handle incoming UDP messages which are ChannelData
      *            messages.
@@ -317,6 +350,7 @@ public class NetAccessManager
      * Creates and starts a new access point based on the specified socket.
      * If the specified access point has already been installed the method
      * has no effect.
+     * 如果指定的访问点 已经被安装,这个方法将没有副作用 ...
      *
      * @param  socket   the socket that the access point should use.
      */
@@ -330,6 +364,7 @@ public class NetAccessManager
         {
             // In case of TCP we can extract the remote address from the actual
             // Socket.
+            // TCP 的情况下,我们从实际的Socket中抓取远程地址 ...
             remoteAddress
                 = new TransportAddress(tcpSocket.getInetAddress(),
                                        tcpSocket.getPort(),
@@ -347,7 +382,7 @@ public class NetAccessManager
      * @param  socket   the socket that the access point should use.
      * @param remoteAddress the remote address of the socket of the
      * {@link Connector} to be created if it is a TCP socket, or null if it
-     * is UDP.
+     * is UDP.   如果为空,使用UDP,否则 这表示需要被创建的连接器的socket 的远程地址 ..
      */
     protected void addSocket(IceSocketWrapper socket,
                              TransportAddress remoteAddress)
@@ -366,6 +401,7 @@ public class NetAccessManager
                 ? udpConnectors
                 : tcpConnectors;
 
+        // 同步 进行处理 ...(开启连接器) ...
         synchronized (connectorsMap)
         {
             Map<TransportAddress, Connector> connectorsForLocalAddress
@@ -379,6 +415,7 @@ public class NetAccessManager
 
             if (!connectorsForLocalAddress.containsKey(remoteAddress))
             {
+                // 开始创建连接器 ... 进行处理 ..
                 Connector connector
                     = new Connector(
                         socket,
@@ -520,6 +557,8 @@ public class NetAccessManager
     }
 
     /**
+     * 入队 进入的RawMessage, 通过messageProcessingExecutor 进行异步处理 ...
+     *
      * Enqueues incoming {@link RawMessage} for asynchronous
      * processing by {@link #messageProcessingExecutor}
      * @param message <tt>RawMessage</tt> to process
@@ -533,6 +572,7 @@ public class NetAccessManager
         }
 
         MessageProcessingTask messageProcessingTask
+                // 不会报错 ... 如果没有仅仅为空 ..
             = taskPool.poll();
         if (messageProcessingTask == null)
         {
@@ -546,15 +586,18 @@ public class NetAccessManager
         }
         else
         {
+            // 否则直接拿取一个进行重置 .... 状态
             messageProcessingTask.resetState();
         }
 
+        // 可变对象,重新调度 ..
         messageProcessingTask.setMessage(message, onRawMessageProcessed);
 
         activeTasks.add(messageProcessingTask);
 
         // Use overload which does not return Future object to avoid
         // unnecessary allocation
+        // 然后交给消息处理执行器执行( 这里不需要返回Future 对象 避免不必要的分配)
         messageProcessingExecutor.execute(messageProcessingTask);
     }
 

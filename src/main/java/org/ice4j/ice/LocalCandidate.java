@@ -28,6 +28,10 @@ import org.jitsi.utils.logging2.*;
 /**
  * <tt>LocalCandidate</tt>s are obtained by an agent for every stream component
  * and are then included in outgoing offers or answers.
+ * 本地候选通过一个代理进行获取的(从每一个流组件中拿取) 并且 他们是包括在 发出的offers 或者 应答 ...
+ *
+ * A candidate that an ICE agent has obtained and may send to its peer.
+ * 一个本地候选是 ICE 代理中包含且也许会发给它的对端 ...
  *
  * @author Emil Ivov
  * @author Lyubomir Marinov
@@ -46,6 +50,8 @@ public abstract class LocalCandidate
         = java.util.logging.Logger.getLogger(HostCandidate.class.getName());
 
     /**
+     *
+     * 被用来发现候选的方法类型 ..
      * The type of method used to discover this candidate ("host", "upnp", "stun
      * peer reflexive", "stun server reflexive", "turn relayed", "google turn
      * relayed", "google tcp turn relayed" or "jingle node").
@@ -67,10 +73,14 @@ public abstract class LocalCandidate
      */
     private final Logger logger;
 
+
+    // -------------------------- 根据 规范 ...
+    //  https://www.rfc-editor.org/rfc/pdfrfc/rfc8445.txt.pdf$4. Terminology
     /**
      * Creates a <tt>LocalCandidate</tt> instance for the specified transport
      * address and properties.
      *
+     *  候选本质上就是ip / 端口组合 ...
      * @param transportAddress  the transport address that this candidate is
      * encapsulating.
      * @param parentComponent the <tt>Component</tt> that this candidate

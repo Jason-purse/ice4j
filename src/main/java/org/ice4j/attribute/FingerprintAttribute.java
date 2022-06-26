@@ -48,6 +48,20 @@ import org.ice4j.stack.*;
  * message-integrity value before the CRC is computed, since the CRC is
  * done over the value of the MESSAGE-INTEGRITY attribute as well.
  *
+ *
+ * 这个指纹属性 被用来辨别 STUN 包(与其他协议分开) ..
+ * 它也许会保留在所有的STUN 消息中 ...
+ * 这个属性的值 将进行STUN 消息的CRC-32 校验(但是会排除 FINGERPRINT属性自身) ...
+ * 和32位 值 0x5354554e 进行异或(在应用程序数据包也在其中使用CRC-32的情况下，XOR会有所帮助)
+ * 32位CRC 是由（International Telecommunication Union）国际电信联盟 定义的算法
+ *
+ * 当如果出现,这个FINGERPRINT 属性 必须放置在消息的最后,然后且必须出现在MESSAGE-INTEGRITY之后 ..
+ *
+ * 与消息完整性一样，指纹属性中使用的CRC覆盖了STUN消息头的长度字段。 因此，在计算CRC之前，此值必须正确，并且包含CRC属性作为消息长度的一部分。
+ * 在消息中使用指纹属性时，首先将该属性放入具有虚拟值的消息中，然后计算CRC，然后更新属性的值。
+ * 如果 MESSAGE-INTEGRITY 属性也存在，则在计算 CRC 之前，它必须以正确的消息完整性值存在，因为 CRC 也是在 MESSAGE-INTEGRITY 属性的值上完成的。
+ *
+ *
  * @author Sebastien Vincent
  * @author Emil Ivov
  */
@@ -63,10 +77,15 @@ public class FingerprintAttribute
     /**
      * The value that we need to XOR the CRC with. The XOR helps in cases where
      * an application packet is also using CRC-32 in it).
+     * 当应用 packet 使用crc-32 时能够有所帮助 ...
+     *
+     *  0x5354554e
      */
     public static final byte[] XOR_MASK = { 0x53, 0x54, 0x55, 0x4e};
 
     /**
+     *
+     * 这个属性的检查码 .. 仅仅应用于进入的消息 ...
      * The CRC32 checksum that this attribute is carrying. Only used in incoming
      * messages.
      */
@@ -231,6 +250,8 @@ public class FingerprintAttribute
      * Calculates and returns the CRC32 checksum for <tt>message</tt> after
      * applying the <tt>XOR_MASK</tt> specified by RFC 5389.
      *
+     * 根据应用 5389 指定的XOR_MASK 计算并返回CRC 32 checksum ....
+     *
      * @param message the message whose checksum we'd like to have
      * @param offset the location in <tt>message</tt> where the actual message
      * starts.
@@ -246,6 +267,7 @@ public class FingerprintAttribute
         CRC32 checksum = new CRC32();
         checksum.update(message, offset, len);
 
+        // 计算出的crc 余数 ...
         long crc = checksum.getValue();
         byte[] xorCRC32 = new byte[4];
 

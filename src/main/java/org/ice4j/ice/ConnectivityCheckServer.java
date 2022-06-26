@@ -28,6 +28,8 @@ import org.jitsi.utils.logging2.*;
  * The class that would be handling and responding to incoming connectivity
  * checks.
  *
+ * 处理相关进入连接检查的类 ...
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  */
@@ -65,6 +67,9 @@ class ConnectivityCheckServer
      * Creates a new <tt>ConnectivityCheckServer</tt> setting
      * <tt>parentAgent</tt> as the agent that will be used for retrieving
      * information such as user fragments for example.
+     *
+     * 创建一个新的连接活动检查服务器 配置
+     * 因为 父Agent 将被用来抓取信息(例如用户帧) ..
      *
      * @param parentAgent the <tt>Agent</tt> that is creating this instance.
      */

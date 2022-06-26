@@ -22,7 +22,7 @@ import java.net.*;
 
 /**
  * UDP implementation of the <tt>IceSocketWrapper</tt>.
- *
+ * IceSocketWrapper 的udp 实现 ...
  * @author Sebastien Vincent
  */
 public class IceUdpSocketWrapper
