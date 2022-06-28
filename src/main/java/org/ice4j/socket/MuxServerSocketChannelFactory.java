@@ -27,6 +27,10 @@ import java.util.*;
  * are capable of sharing their listening endpoints with multiple others like
  * them.
  *
+ * 如果它是受运行时支持的,初始化ServerSocketChannel,能够在多个类似于这个channel之间共享它们的监听端口 ...
+ *
+ *
+ *
  * @author Lyubomir Marinov
  */
 public class MuxServerSocketChannelFactory
@@ -43,19 +47,24 @@ public class MuxServerSocketChannelFactory
      * of the {@code ServerSocketChannel} returned by
      * {@link #openAndBindServerSocketChannel(Map, SocketAddress, int)} which
      * specifies the value of the {@code SO_REUSEADDR} socket option.
+     *
+     * 这个属性名的属性值被用来决定 用来指定 SO_REUSEADDRESS socket选项的值 ...
      */
     public static final String SOCKET_REUSE_ADDRESS_PROPERTY_NAME
         = "socket.reuseAddress";
 
     /**
      * Opens and binds a new {@code ServerSocketChannel} instance.
-     *
+     * 打开并绑定了一个新的ServerSocketChannel 实例 ....
      * @param properties a {@code Map} of the values to be assigned to
      * properties of the underlying {@link ServerSocketChannel} which is to
      * actually listen on the specified {@code endpoint}. If the new instance is
      * not the first to open and bind the specified {@code endpoint}, the
      * {@code properties} and their respective values may not be used.
-     * @param endpoint the IP and port the new instance is to bind to
+     *  仅当第一个实例首先open并且绑定到一个特定的端口上,这些map的values可能才会被使用 ...
+     *
+     *
+     * @param endpoint the IP and port the new instance is to bind to  socket绑定的目标端点(ip / port)..
      * @param backlog the requested maximum number of pending incoming
      * connections to be queued. If the new instance is not the first to open
      * and bind the specified {@code endpoint}, the value may not be used.

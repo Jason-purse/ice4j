@@ -34,6 +34,11 @@ import org.ice4j.socket.*;
  * of {@link AbstractTcpListener} are added as local host candidates (with type
  * "tcp" and tcptype "passive") when harvesting.
  *
+ * 一个抽象TcpListener 的实现 - 它表现为一个CandidateHarvester ...
+ * 会话将会被接收(如果它们的ufrag 匹配了通过此收集器注册的组件的 ice-ufrag属性) ...
+ * 并且 AbstractTcpListener 的已知地址将会被作为本地主机候选增加(使用tcp 以及 tcp类型 "passive") - 当收集的时候 ...
+ *
+ *
  * @author Boris Grozev
  * @author Lyubomir Marinov
  */

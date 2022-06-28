@@ -23,6 +23,11 @@ package org.ice4j.ice;
  * implementation's {@link DefaultNominator} class. Applications can either
  * pick one of these strategies or select <tt>NONE</tt> in case they want to
  * handle nominations themselves.
+ *
+ * 包含了由当前DefaultNominator 所支持的一个提名策略 ...
+ * 应用能够要么 抓取这些策略中的其中一个 或者选择   NONE (如果它们想要自己处理提名) ...
+ *
+ * 这个策略是ice4j自己的概念,并没有在5245中提及 ...
  * <p>
  * Note that NominationStrategies are an ice4j concept and they are not
  * mentioned in RFC 5245.
@@ -40,10 +45,15 @@ public enum NominationStrategy
     /**
      * The strategy consists in nominating the first candidate pair that's
      * confirmed as valid.
+     *
+     * 提名第一个有效的pair ..
      */
     NOMINATE_FIRST_VALID("NominateFirstValid"),
 
     /**
+     * 这个策略会寻找最高优先级的 有效pair ...
+     * 一旦一个pair 被验证之后,且没有更高级别的pair 更优秀 ... 那么它将被提名 ..
+     * 反之 会通过一个timer 进行巡查(如果在timer 超时之后仍然是最优的,那么这个最高优先级的验证的pair 被提名) ...
      * The strategy consists in nominating the highest priority valid pair.
      * Once a pair is validated, if no higher-priority pairs remain outstanding,
      * it is nominated; otherwise, a timer is armed, and if higher-priority
@@ -58,12 +68,17 @@ public enum NominationStrategy
      * validated first, a timer is armed and only if no host or server
      * reflexive pair gets validated prior to timeout, the relayed ones
      * gets nominated.
+     *
+     * 这个策略 由 提名第一个中继的候选pair 为第一个有效的,一个timer 将会被启动(如果没有host 或者 server reflexive pair在超时之前得到验证
+     * 那么这个中继的pair 将会被提名) ...
      */
     NOMINATE_FIRST_HOST_OR_REFLEXIVE_VALID("NominateFirstHostOrReflexiveValid"),
 
     /**
      * The strategy consists in nominating the pair that showed the best
      * shortest round trip time once all checks in a list completed.
+     *
+     * 根据所完成列表进行一次检查,拿取最短往返时间的 pair 提名 ...
      */
     NOMINATE_BEST_RTT("NominateBestRTT");
 

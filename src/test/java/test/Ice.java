@@ -47,6 +47,9 @@ public class Ice
      * the run-sample Ant target) is to start connectivity establishment of the
      * remote peer (in addition to the connectivity establishment of the local
      * agent which is always started, of course).
+     *
+     * 这个指示器决定了ICE 应用是否开始启动远程peer的连接建立(例如 运行示例 Ant 目标) ...
+     * 此外 本地代理的连接建立总是启动的 ...```
      */
     private static final boolean START_CONNECTIVITY_ESTABLISHMENT_OF_REMOTE_PEER
         = false;
@@ -91,6 +94,8 @@ public class Ice
 
         for(IceMediaStream stream : remotePeer.getStreams())
         {
+//            / / ufrag / upassword 可以存在于会话级别 / 流级别  会话级别的都会应用到流上
+            // 除非在流上进行修改 ...
             stream.setRemoteUfrag(localAgent.getLocalUfrag());
             stream.setRemotePassword(localAgent.getLocalPassword());
         }
@@ -121,6 +126,8 @@ public class Ice
     /**
      * The listener that would end example execution once we enter the
      * completed state.
+     *
+     * 这个监听器将会结束 示例执行,一旦我们启动了完成的状态 ...
      */
     public static final class IceProcessingListener
         implements PropertyChangeListener
@@ -181,6 +188,8 @@ public class Ice
                  * Though the process will be instructed to die, demonstrate
                  * that Agent instances are to be explicitly prepared for
                  * garbage collection.
+                 *
+                 * 进行垃圾回收做出准备 ...
                  */
                 ((Agent) evt.getSource()).free();
 
@@ -193,6 +202,8 @@ public class Ice
 
     /**
      * Installs remote candidates in <tt>localAgent</tt>..
+     *
+     * 在本地代理中安装远程的候选 ....
      *
      * @param localAgent a reference to the agent that we will pretend to be the
      * local
@@ -239,6 +250,7 @@ public class Ice
             if(remoteComponent != null)
                 transferRemoteCandidates(localComponent, remoteComponent);
             else
+                // 如果不一致,那么就不再需要这个组件了 ..
                 localStream.removeComponent(localComponent);
         }
     }
@@ -257,11 +269,15 @@ public class Ice
         List<LocalCandidate> remoteCandidates
             = remoteComponent.getLocalCandidates();
 
+        // 本地组件设置默认的远程候选 ...
         localComponent.setDefaultRemoteCandidate(
                 remoteComponent.getDefaultCandidate());
 
         for(Candidate<?> rCand : remoteCandidates)
         {
+            // 通信的一个过程(交换候选,选择最优的通信候选) .
+            // 本地组件将信息传递到对方的地址上(必须有一个东西可以表示这个地址)
+            // 所以我们需要在本地组件上 提供远程候选的信息 ...
             localComponent.addRemoteCandidate(
                     new RemoteCandidate(
                             rCand.getTransportAddress(),

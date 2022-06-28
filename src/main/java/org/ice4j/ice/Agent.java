@@ -203,6 +203,8 @@ public class Agent
 
     /**
      * The lock that we use while starting connectivity establishment.
+     *
+     * 当开始连通性检查建立时使用的锁
      */
     private final Object startLock = new Object();
 
@@ -225,6 +227,8 @@ public class Agent
      * 连接断开器编号用于连接检查，以检测和
      * 修复两个代理都认为具有控制或
      * 受控角色的情况。
+     *
+     * 详情请见 https://www.rfc-editor.org/rfc/pdfrfc/rfc5245.txt.pdf$7.2.1.1 Detecting and Repairing Role Conflicts
      */
     private long tieBreaker;
 
@@ -758,6 +762,8 @@ public class Agent
 
     /**
      * Initializes all stream check lists and begins the checks.
+     *
+     * 初始化所有的流检查列表并开始检查 ...
      */
     public void startConnectivityEstablishment()
     {
@@ -806,6 +812,9 @@ public class Agent
      * if they do not contain remote candidates. A possible reason for this
      * could be the fact that the remote party canceled some of the streams or
      * that it is using rtcp-mux or bundle.
+     *
+     * 释放并移除这个代理组件的流 / 或者所有流(如果它们没有包含远程候选) ...
+     * 一个可能 的原因是(远程的这个流的某一些部分被取消了 或者它们 使用了 rtcp-mux 或者bundle ...
      */
     private void pruneNonMatchedStreams()
     {
@@ -1409,6 +1418,7 @@ public class Agent
     /**
      * Specifies whether this agent has the controlling role in an ICE exchange.
      *
+     * 指定这个代理在ice 交换中是否已经有了控制角色 ..
      * @param isControlling <tt>true</tt> if this is to be the controlling
      * <tt>Agent</tt> and <tt>false</tt> otherwise.
      */
@@ -1858,6 +1868,7 @@ public class Agent
     /**
      * Specifies the {@link NominationStrategy} that we should use in order to
      * decide if and when we should nominate valid pairs.
+     * 指定 NominationStrategy - 我们应该用来决定 以及什么时候我们应该提名有效的对 ...
      *
      * @param strategy the strategy that we'd like to use for nominating
      * valid {@link CandidatePair}s.

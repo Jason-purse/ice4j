@@ -24,6 +24,10 @@ import org.ice4j.*;
  * or an answer from its peer, and that it would use to form candidate pairs
  * after combining them with its local candidates.
  *
+ * 远程候选是一个候选者(一个代理从一个从offer中接收或者 来自这个代理的对端回答中接收) ...
+ *
+ * 它被用来形式化一个候选对(在和本地候选合并之后形成) ....
+ *
  * @author Emil Ivov
  */
 public class RemoteCandidate

@@ -36,6 +36,13 @@ import static org.ice4j.ice.harvest.HarvestConfig.config;
  * handshake). The handling of the accepted sessions (e.g. handling in ICE) is
  * left to the implementations.
  *
+ * 这是一个抽象类(绑定一些sockets集合 并接收 从STUN binding 请求开始的 会话(此前可以有一个可选的ssl 握手) ..
+ * 已经接收的会话的处理(操作)   - 例如 ICE中的处理 是取决于实现的 ...
+ * 这个示例运行两个线程(一个acceptThread / readThread) ..
+ * 这个accept thread 仅仅接收新的Socket .. 然后将他们传递到 read thread上 ..
+ * 其实它的目的也就是为了创建一个AIO(查看实现是使用了Selector) 的socket 通信模型。。
+ * read thread 仅仅只是为了获取accepted socket的STUN 消息 , 基于STUN 用户名称,将它传递到合适的会话 ...
+ *
  * This instance runs two threads: {@link #acceptThread} and
  * {@link #readThread}. The 'accept' thread just accepts new <tt>Socket</tt>s
  * and passes them over to the 'read' thread. The 'read' thread reads a STUN
@@ -201,6 +208,8 @@ public abstract class AbstractTcpListener
      * <tt>transportAddresses</tt> which are found suitable for candidate
      * allocation.
      *
+     * 增加一些 根据候选收集所发现的合适的transportAddresses 将他们加入到 localAddresses中 ...
+     *
      * @param transportAddresses the list of addresses to add.
      * @throws IOException when {@link StackProperties#ALLOWED_ADDRESSES} or
      * {@link StackProperties#BLOCKED_ADDRESSES} contains invalid values.
@@ -315,6 +324,8 @@ public abstract class AbstractTcpListener
     /**
      * Initializes {@link #serverSocketChannels}, creates and starts the threads
      * used by this instance.
+     *
+     * 初始化Socket 监听端口 ... 创建并开始线程处理工作 ...
      * @throws IOException if an I/O error occurs
      */
     protected void init()
@@ -427,6 +438,7 @@ public abstract class AbstractTcpListener
                 // Allow to go on, so we can quit if closed.
                 long selectTimeout = 3000;
 
+                // keys 就是注册感兴趣的操作所的出来的结果
                 for (SelectionKey key : selector.keys())
                 {
                     if (key.isValid())
@@ -748,13 +760,14 @@ public abstract class AbstractTcpListener
             if (channel.buffer == null)
             {
                 // Set up a buffer with a pre-determined size
-
+                // 第一次 检查SSL handleShake ...
                 if (!channel.checkedForSSLHandshake && channel.length == -1)
                 {
                     channel.buffer
                         = ByteBuffer.allocate(
                                 GoogleTurnSSLCandidateHarvester
                                     .SSL_CLIENT_HANDSHAKE.length);
+
                 }
                 else if (channel.length == -1)
                 {

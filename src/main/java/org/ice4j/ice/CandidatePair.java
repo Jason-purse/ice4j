@@ -32,6 +32,12 @@ import org.ice4j.stack.*;
  * transaction that the client will perform on a particular candidate pair by
  * sending a STUN request from the local candidate to the remote candidate.
  *
+ *
+ * candidatePair 将会映射本地到远程候选 -因此它们能够增加到一个check lists ..
+ * ice中的连接活动总是通过pairs进行验证 ..
+ * 例如,stun 包从一个pair本地候选进行发送 到一个pair的远程候选 ... 为了看见这些pair进行工作,一个代理会调度各种各样的
+ * 连接活动检查 .. 每一个检查是一个stun 请求 / 响应 事务(客户端能偶执行一个特殊的候选对 - 通过从本地发送一个stun 请求到远程候选) ...
+ *
  * @author Emil Ivov
  * @author Lyubomir Marinov
  * @author Boris Grozev

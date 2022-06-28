@@ -30,6 +30,8 @@ import static org.ice4j.ice.AgentConfig.config;
  * The class represents a media stream from the ICE perspective, i.e. a
  * collection of components.
  *
+ * 这个类呈现了一个来自ICE 方面的媒体流(角度), 例如一个组件集合 ..
+ *
  * @author Emil Ivov
  * @author Namal Senarathne
  */
@@ -105,6 +107,8 @@ public class IceMediaStream
      * The CHECK-LIST for this agent described in the ICE specification: There
      * is one check list per in-use media stream resulting from the offer/answer
      * exchange.
+     *
+     * ICE 规范中描述的此代理的检查列表：每个正在使用的媒体流都有一个检查列表，该列表由提供/应答交换产生。
      */
     private final CheckList checkList;
 
@@ -490,6 +494,8 @@ public class IceMediaStream
     /**
      * Returns the list of <tt>CandidatePair</tt>s to be used in checks for
      * this stream.
+     *
+     * 返回这个流的已经被检查过可以被使用的CandidatePair 列表 ...
      *
      * @return the list of <tt>CandidatePair</tt>s to be used in checks for
      * this stream.

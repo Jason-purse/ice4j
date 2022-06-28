@@ -56,8 +56,11 @@ public class StackProperties
      * The name of the property that tells if we should bind to the
      * wildcard address instead of the (usually more specific) harvest candidate
      * addresses.
+     * 是否应该使用一个通配符的地址 代理通常更加明确的收集候选地址 ...
      *
      * The wildcard is a special local IP address. It usually means "any".
+     *
+     * 这个通配符是一个特定本地IP 地址,通常意味着是任意的 ...
      */
     public static final String BIND_WILDCARD = "org.ice4j.BIND_WILDCARD";
 

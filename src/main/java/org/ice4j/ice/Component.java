@@ -1017,6 +1017,8 @@ public class Component
      * <tt>null</tt> if no pair has been selected so far or if ICE processing
      * has failed.
      *
+     * 返回这个已经被ICE 处理所选择的候选PAIR(或者说null,如果说没有pair 被选择-到目前为止,或者ice 处理失败) ...
+     *
      * @return the {@link CandidatePair} selected for use by ICE processing or
      * <tt>null</tt> if no pair has been selected so far or if ICE processing
      * has failed.

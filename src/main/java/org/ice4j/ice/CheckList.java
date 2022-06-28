@@ -27,9 +27,15 @@ import java.util.*;
  * <tt>CheckListState</tt>). The pairs in a check list are those that an ICE
  * agent will run STUN connectivity checks for. There is one check list per
  * in-use media stream resulting from the offer/answer exchange.
+ *
+ * 一个检查列表是一个具有state 的CandidatePair的列表 (例如 CheckListState) ...
+ * 在检查列表中的pair 将被ICE 代理进行STUN 连接检查 ...
+ * 每一个使用中的媒体流的check list 来自 提供 / 应答交换
  * <p>
  * Given the asynchronous nature of ice, a check list may be accessed from
  * different locations. This class therefore stores pairs in a <tt>Vector</tt>
+ * 鉴于ice 的异步特性,check list 也许会从不同的位置进行访问,所以这个类实现同步访问形式(vector) ...
+ *
  * @author Emil Ivov
  */
 public class CheckList
